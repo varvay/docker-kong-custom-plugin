@@ -7,10 +7,10 @@ Here are listed the references you can read for further details. Also by the tim
 
 ## Stacks
 Here are listed the stacks used,
-* Docker - v20.10.21
-* Kong - v3.3.0
-* Lua - v5.4.6
-* LuaRocks - v3.9.2
+* Docker ─ v20.10.21
+* Kong ─ v3.3.0
+* Lua ─ v5.4.6
+* LuaRocks ─ v3.9.2
 
 ## Folder Structure
 ```
@@ -33,7 +33,6 @@ Before jumping to running the project, here are listed the pre-requisite you nee
 * You should have LuaRocks installed on your machine. I'm recommending to use at least LuaRock v3.x.x
 * You should have Docker installed on your machine. I'm recommending to use latest Docker version
 
-
 Follow these steps to start and run the project,
 1. build Lua plugin. Actually this step should be able to be included during the Docker image build, but somehow blocked due to an error. As a temporary workaround, this step will be done manually
    1. move to `<root>/hello/` directory to build the Lua plugin using LuaRocks
@@ -44,3 +43,8 @@ Follow these steps to start and run the project,
    2. execute command `docker build . -t kong-custom-plugin`
 3. run Docker container
    1. execute command `docker compose up --build`
+
+## Testing
+Here are REST APIs that you can hit to test the Kong,
+* retrieve Kong route configuration ─ `curl --location 'http://localhost:8081/routes'`
+* accessing GitHub public API through gateway ─ `curl --location 'http://localhost:8080/github/users/octocat'`
