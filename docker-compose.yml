@@ -1,8 +1,21 @@
 version: '3.9'
 
+networks:
+  kong-net:
+    driver: bridge
+
 services:
+  redis:
+    image: redis/redis-stack:latest
+    ports:
+      - 6379:6379
+      - 8088:8001
+    networks:
+      - kong-net
   kong:
     image: kong-custom-plugin:latest
+    depends_on:
+      - redis
     user: kong
     environment:
       KONG_DECLARATIVE_CONFIG: "/kong.yaml"
@@ -17,3 +30,5 @@ services:
       - "0.0.0.0:8444:8444/tcp"
     volumes:
       - ./kong.yaml:/kong.yaml:ro
+    networks:
+      - kong-net

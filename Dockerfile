@@ -6,11 +6,16 @@ WORKDIR /custom-plugins/hello
 
 COPY ./hello /custom-plugins/hello
 
+RUN apt-get update && apt-get install -y gcc libsodium-dev
+
 RUN luarocks make
 
 # RUN luarocks pack kong-plugin-hello 0.0.1-1 -- Manually generated due to unknown issue, only as a temporary workaround
 
+RUN luarocks install luasodium
 RUN luarocks install kong-plugin-hello-0.0.1-1.all.rock
+
+RUN luarocks install redis-lua
 
 USER kong
 
