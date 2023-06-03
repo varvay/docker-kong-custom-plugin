@@ -15,12 +15,12 @@ Here are listed the stacks used,
 ## Folder Structure
 ```
 <root> ─ root folder
-├── hello
+├── kong-plugin-encryption
     ├── kong
         ├── handler.lua
         ├── schema.lua
-    ├── kong-plugin-hello-0.0.1-1.all.rock
-    ├── kong-plugin-hello-0.0.1-1.rockspec
+    ├── kong-plugin-encryption-0.0.1-1.all.rock
+    ├── kong-plugin-encryption-0.0.1-1.rockspec
 ├── docker-compose.yml
 ├── Dockerfile
 ├── kong.yaml
@@ -35,9 +35,9 @@ Before jumping to running the project, here are listed the pre-requisite you nee
 
 Follow these steps to start and run the project,
 1. build Lua plugin. Actually this step should be able to be included during the Docker image build, but somehow blocked due to an error. As a temporary workaround, this step will be done manually
-   1. move to `<root>/hello/` directory to build the Lua plugin using LuaRocks
+   1. move to `<root>/kong-plugin-encryption/` directory to build the Lua plugin using LuaRocks
    2. execute command `sudo luarocks make`. Sudo in this case probably required so LuaRocks can write into LuaRocks's library directory
-   3. execute command `luarocks pack kong-plugin-hello 0.0.1-1` to pack the Lua library so later can be installed during spinning up the Docker container. The output of this command would be an `all.rock` file e.g. `kong-plugin-hello-0.0.1-1.all.rock`
+   3. execute command `luarocks pack kong-plugin-encryption 0.0.1-1` to pack the Lua library so later can be installed during spinning up the Docker container. The output of this command would be an `all.rock` file e.g. `kong-plugin-encryption-0.0.1-1.all.rock`
 2. build Docker image
    1. move to `/<root>/` directory to build the Docker image
    2. execute command `docker build . -t kong-custom-plugin`

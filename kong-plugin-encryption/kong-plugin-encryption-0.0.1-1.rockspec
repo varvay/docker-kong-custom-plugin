@@ -1,5 +1,5 @@
 rockspec_format = "3.0"
-package = "kong-plugin-hello"
+package = "kong-plugin-encryption"
 version = "0.0.1-1"
 source = {
    url = "git+https://github.com/varvay/helloworld.git",
@@ -14,7 +14,7 @@ dependencies = {
 build = {
    type = "builtin",
    modules = {
-      ["kong.plugins.kong-plugin-hello.handler"] = "kong/plugins/hello/handler.lua",
-      ["kong.plugins.kong-plugin-hello.schema"] = "kong/plugins/hello/schema.lua",
+      ["kong.plugins.kong-plugin-encryption.handler"] = "kong/plugins/kong-plugin-encryption/handler.lua",
+      ["kong.plugins.kong-plugin-encryption.schema"] = "kong/plugins/kong-plugin-encryption/schema.lua",
    }
 }

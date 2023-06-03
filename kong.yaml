@@ -2,7 +2,7 @@ _format_version: "3.0"
 
 # This plugins does required and it's not redundant with the one defined as environment variable, they serve different purpose
 plugins:
-  - name: kong-plugin-hello
+  - name: kong-plugin-encryption
 services:
   - name: github-service
     url: https://api.github.com
