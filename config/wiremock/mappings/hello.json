@@ -1,0 +1,15 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/api/endpoint",
+    "bodyPatterns": [
+      {
+        "equalToJson": "{\"name\":\"John\",\"age\":30}"
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "body": "Request body matched!"
+  }
+}

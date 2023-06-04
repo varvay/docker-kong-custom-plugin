@@ -16,5 +16,6 @@ build = {
    modules = {
       ["kong.plugins.kong-plugin-encryption.handler"] = "kong/plugins/kong-plugin-encryption/handler.lua",
       ["kong.plugins.kong-plugin-encryption.schema"] = "kong/plugins/kong-plugin-encryption/schema.lua",
+      ["kong.plugins.kong-plugin-encryption.utils"] = "kong/plugins/kong-plugin-encryption/utils.lua",
    }
 }

@@ -6,7 +6,12 @@ plugins:
 services:
   - name: github-service
     url: https://api.github.com
+  - name: wiremock-service
+    url: http://wiremock:8880
 routes:
   - name: github-route
     paths: ["/github"]
     service: github-service
+  - name: wiremock-route
+    paths: ["/wiremock"]
+    service: wiremock-service

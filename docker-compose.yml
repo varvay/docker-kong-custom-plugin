@@ -12,13 +12,23 @@ services:
       - 8088:8001
     networks:
       - kong-net
+  wiremock:
+    image: wiremock/wiremock:latest
+    command: --port 8880
+    ports:
+      - 8880:8880
+    volumes:
+      - ./config/wiremock:/home/wiremock:ro
+    networks:
+      - kong-net
   kong:
     image: kong-custom-plugin:latest
     depends_on:
       - redis
+      - wiremock
     user: kong
     environment:
-      KONG_DECLARATIVE_CONFIG: "/kong.yaml"
+      KONG_DECLARATIVE_CONFIG: "/config/kong/kong.yaml"
       KONG_DATABASE: "off"
       KONG_PROXY_LISTEN: "0.0.0.0:8080"
       KONG_ADMIN_LISTEN: "0.0.0.0:8081"
@@ -29,6 +39,6 @@ services:
       - "0.0.0.0:8443:8443/tcp"
       - "0.0.0.0:8444:8444/tcp"
     volumes:
-      - ./kong.yaml:/kong.yaml:ro
+      - ./config/kong/kong.yaml:/config/kong/kong.yaml:ro
     networks:
       - kong-net
