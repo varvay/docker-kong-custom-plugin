@@ -29,18 +29,18 @@ class LoadTest {
                        var hex_enc_c_public_key: String, var hex_enc_c_private_key: String,
                        var hex_enc_s_private_key: String)
 
-    private val ByteArray.hex: String
+    val ByteArray.hex: String
         get() = HexFormat.of().formatHex(this)
 
-    private val String.byteArray: ByteArray
+    val String.byteArray: ByteArray
         get() = HexFormat.of().parseHex(this)
 
-    private val ByteArray.string: String
+    val ByteArray.string: String
         get() = String(this)
 
     private val logger: Logger = LoggerFactory.getLogger(LoadTest::class.java)
 
-    fun exec(url: String, deviceId: String, jsonRequest: String, isEncDownstream: Boolean, isEncUpstream: Boolean): String {
+    fun exec(keyExchangeUrl: String, verifyUrl: String, deviceId: String, jsonRequest: String, isEncDownstream: Boolean, isEncUpstream: Boolean): String {
         Security.addProvider(BouncyCastleProvider())
 
         val request = Gson().fromJson(jsonRequest, Request::class.java)
@@ -48,7 +48,7 @@ class LoadTest {
 
         val loadTest = LoadTest()
 
-        val keyPair = loadTest.keyExchange(deviceId)
+        val keyPair = loadTest.keyExchange(keyExchangeUrl, deviceId)
 
         val signedMessage = loadTest.signMessage(
             Ed25519PrivateKeyParameters(keyPair.hex_sign_c_private_key.byteArray),
@@ -64,7 +64,7 @@ class LoadTest {
         val encodedEncRequest = Gson().toJson(encRequest)
 
         val encResponse = loadTest.sendPost(
-            url,
+            verifyUrl,
             deviceId,
             encodedEncRequest,
             isEncDownstream,
@@ -86,7 +86,7 @@ class LoadTest {
 
     }
 
-    private fun keyExchange(deviceId: String): KeyPair {
+    fun keyExchange(url: String, deviceId: String): KeyPair {
 
         // Generate encryption key
 
@@ -112,7 +112,7 @@ class LoadTest {
 
         // Perform key-exchange to server
 
-        val connection = URL("http://localhost:8080/key-exchange").openConnection() as HttpURLConnection
+        val connection = URL(url).openConnection() as HttpURLConnection
         connection.requestMethod = "POST"
         connection.addRequestProperty("X-Device-ID", deviceId)
         connection.addRequestProperty("X-Enc-Public-Key", encPublicKey.encoded.hex)
@@ -149,7 +149,7 @@ class LoadTest {
 
     }
 
-    private fun scalarMult(encPrivateKey: ByteArray, encPublicKey: ByteArray): ByteArray {
+    fun scalarMult(encPrivateKey: ByteArray, encPublicKey: ByteArray): ByteArray {
 
         // Generate shared key
 
@@ -168,7 +168,7 @@ class LoadTest {
 
     }
 
-    private fun signMessage(signPrivateKey: Ed25519PrivateKeyParameters, plaintext: ByteArray): ByteArray {
+    fun signMessage(signPrivateKey: Ed25519PrivateKeyParameters, plaintext: ByteArray): ByteArray {
 
         // Sign message
 
@@ -186,7 +186,7 @@ class LoadTest {
 
     }
 
-    private fun verifySignature(signPublicKey: Ed25519PublicKeyParameters, plaintext: ByteArray): ByteArray {
+    fun verifySignature(signPublicKey: Ed25519PublicKeyParameters, plaintext: ByteArray): ByteArray {
 
         // Verify signature
 
@@ -215,7 +215,7 @@ class LoadTest {
 
     }
 
-    private fun encrypt(encPrivateKey: ByteArray, publicKey: ByteArray, plaintext: ByteArray): Pair<ByteArray, ByteArray> {
+    fun encrypt(encPrivateKey: ByteArray, publicKey: ByteArray, plaintext: ByteArray): Pair<ByteArray, ByteArray> {
 
         // Encrypt message
 
@@ -241,7 +241,7 @@ class LoadTest {
         return Pair(nonce, ciphertext)
     }
 
-    private fun decrypt(privateKey: ByteArray, publicKey: ByteArray, nonce: ByteArray, ciphertext: ByteArray): String {
+    fun decrypt(privateKey: ByteArray, publicKey: ByteArray, nonce: ByteArray, ciphertext: ByteArray): String {
 
         // Decrypt message
 
@@ -265,7 +265,7 @@ class LoadTest {
 
     }
 
-    private fun sendPost(url: String, deviceId: String, message: String, 
+    fun sendPost(url: String, deviceId: String, message: String,
                          isEncDownstream: Boolean, isEncUpstream: Boolean): EncWrapper {
 
         // Send message

@@ -141,9 +141,9 @@ function EncryptionHandler:access(config)
 
   local is_downstream_enc = kong.request.get_header("X-Downstream-Enc")
 
-  if (is_downstream_enc == "true") then
+  kong.service.request.enable_buffering() -- TODO: add handler
 
-    kong.service.request.enable_buffering()
+  if (is_downstream_enc == "true") then
 
     -- Map request
     local device_id = kong.request.get_header("X-Device-ID")
