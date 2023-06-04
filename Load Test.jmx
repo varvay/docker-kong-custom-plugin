@@ -18,7 +18,7 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">10</stringProp>
+        <stringProp name="ThreadGroup.num_threads">50</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
         <stringProp name="ThreadGroup.duration"></stringProp>
@@ -31,11 +31,10 @@
           <stringProp name="filename"></stringProp>
           <stringProp name="parameters"></stringProp>
           <stringProp name="script">import java.util.UUID;
-import org.apache.commons.lang3.RandomStringUtils;
 import mav.LoadTest;
 
 LoadTest lt = new LoadTest();
-lt.exec(UUID.randomUUID().toString(), RandomStringUtils.randomAlphanumeric(4000));</stringProp>
+lt.exec(&quot;http://localhost:8080/wiremock/api/endpoint&quot;, UUID.randomUUID().toString(), &quot;{\&quot;age\&quot;: 30, \&quot;name\&quot;: \&quot;John\&quot;}&quot;, true, true);</stringProp>
           <stringProp name="scriptLanguage">java</stringProp>
         </JSR223Sampler>
         <hashTree>

@@ -15,6 +15,7 @@ dependencies {
     implementation 'org.slf4j:slf4j-api:2.0.5'
     implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
     implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'com.github.kittinunf.fuel:fuel:2.3.1'
 }
 
 shadowJar {

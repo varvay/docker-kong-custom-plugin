@@ -137,7 +137,50 @@ end
 
 function EncryptionHandler:access(config)
   -- Implement logic for the access phase here (http)
-  kong.log.info("access")
+  kong.log.debug("access")
+
+  local is_downstream_enc = kong.request.get_header("X-Downstream-Enc")
+
+  if (is_downstream_enc == "true") then
+
+    kong.service.request.enable_buffering()
+
+    -- Map request
+    local device_id = kong.request.get_header("X-Device-ID")
+
+    local current_body = kong.request.get_body()
+    local nonce = utils.hex2bin(current_body.nonce)
+    local ciphertext = utils.hex2bin(current_body.ciphertext)
+
+    -- Retrieve client's keys from Redis
+    local redis_client =  redis.connect("redis", 6379)
+
+    local res, err = redis_client:hgetall(device_id)
+    if not res then
+      kong.log.error("Failed to retrieve HSET from Redis: ", err)
+      return nil, err
+    end
+
+    redis_client:quit()
+
+    -- Generate shared key
+    local shared_key = sodium.crypto_scalarmult(
+      utils.hex2bin(res["enc_s_priv_k"]), utils.hex2bin(res["enc_c_pub_k"]))
+
+    -- Decrypt request
+    local signedtext = sodium.crypto_aead_aes256gcm_decrypt(
+      shared_key, ciphertext, nonce, nil)
+
+    -- Verify signature
+    local plaintext = sodium.crypto_sign_open(signedtext, utils.hex2bin(res["sign_c_pub_k"]))
+    
+    -- Replace request body
+    kong.service.request.set_raw_body(plaintext)
+    kong.service.request.set_header("Content-Type", "application/json")
+    kong.service.request.set_header("Content-Length", #plaintext)
+  
+  end
+
 end
 
 function EncryptionHandler:ws_handshake(config)
@@ -148,6 +191,20 @@ end
 function EncryptionHandler:header_filter(config)
   -- Implement logic for the header_filter phase here (http)
   kong.log.debug("header_filter")
+
+  local is_upstream_enc = kong.request.get_header("X-Upstream-Enc")
+
+  if (is_upstream_enc == "true") then
+
+    kong.response.set_header("Content-Type", "application/json; charset=utf-8")
+
+    if (kong.response.get_header("Content-Encoding")) then
+      kong.response.clear_header("Content-Encoding")
+    end
+    if (kong.response.get_header("Content-Length")) then
+      kong.response.clear_header("Content-Length")
+    end
+  end
 end
 
 function EncryptionHandler:ws_client_frame(config)
@@ -163,6 +220,50 @@ end
 function EncryptionHandler:body_filter(config)
   -- Implement logic for the body_filter phase here (http)
   kong.log.debug("body_filter")
+
+  local is_upstream_enc = kong.request.get_header("X-Upstream-Enc")
+
+  if (is_upstream_enc == "true") then
+    -- Map request
+    local device_id = kong.request.get_header("X-Device-ID")
+
+    -- Map response
+    local plaintext = kong.service.response.get_raw_body()
+
+    -- Retrieve client's keys from Redis
+    local redis_client =  redis.connect("redis", 6379)
+
+    local res, err = redis_client:hgetall(device_id)
+    if not res then
+      kong.log.error("Failed to retrieve HSET from Redis: ", err)
+      return nil, err
+    end
+
+    redis_client:quit()
+
+    -- Generate shared key
+    local bin_enc_c_pub_k = utils.hex2bin(res["enc_c_pub_k"])
+    local bin_enc_s_priv_k = utils.hex2bin(res["enc_s_priv_k"])
+    local shared_key = sodium.crypto_scalarmult(bin_enc_s_priv_k, bin_enc_c_pub_k)
+
+
+    -- Sign response
+    local s_signed_message = sodium.crypto_sign(plaintext, utils.hex2bin(res["sign_s_priv_k"]))
+    
+    -- Encrypt response
+    local nonce = sodium.randombytes_buf(sodium.crypto_aead_aes256gcm_NPUBBYTES)
+
+    local ciphertext = sodium.crypto_aead_aes256gcm_encrypt(shared_key, s_signed_message, nonce, nil)
+    
+    -- Replace response body
+    local result = cjson.encode({
+      ciphertext = utils.bin2hex(ciphertext),
+      nonce = utils.bin2hex(nonce),
+    })
+
+    kong.response.set_raw_body(result)
+  end
+
 end
 
 function EncryptionHandler:log(config)

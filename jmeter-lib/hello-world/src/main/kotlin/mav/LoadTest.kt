@@ -1,5 +1,6 @@
 package mav
 
+import com.github.kittinunf.fuel.httpPost
 import com.google.gson.Gson
 import org.bouncycastle.crypto.agreement.X25519Agreement
 import org.bouncycastle.crypto.engines.AESEngine
@@ -11,8 +12,6 @@ import org.bouncycastle.crypto.signers.Ed25519Signer
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.io.BufferedReader
-import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 import java.security.SecureRandom
@@ -21,12 +20,14 @@ import java.util.*
 
 class LoadTest {
 
+    data class Request(val age: Int, val name: String)
+
+    data class EncWrapper(val nonce: String, val ciphertext: String)
+
     data class KeyPair(var hex_sign_s_public_key: String, var hex_enc_s_public_key: String,
                        var hex_sign_c_public_key: String, var hex_sign_c_private_key: String,
                        var hex_enc_c_public_key: String, var hex_enc_c_private_key: String,
                        var hex_enc_s_private_key: String)
-
-    data class Response(var message: String, var nonce: String)
 
     private val ByteArray.hex: String
         get() = HexFormat.of().formatHex(this)
@@ -39,39 +40,49 @@ class LoadTest {
 
     private val logger: Logger = LoggerFactory.getLogger(LoadTest::class.java)
 
-    fun exec(deviceId: String, message: String): String {
+    fun exec(url: String, deviceId: String, jsonRequest: String, isEncDownstream: Boolean, isEncUpstream: Boolean): String {
         Security.addProvider(BouncyCastleProvider())
 
-        val keyPair = keyExchange(deviceId)
+        val request = Gson().fromJson(jsonRequest, Request::class.java)
+        val encodedRequest = Gson().toJson(request)
 
-        val signedMessage = signMessage(
+        val loadTest = LoadTest()
+
+        val keyPair = loadTest.keyExchange(deviceId)
+
+        val signedMessage = loadTest.signMessage(
             Ed25519PrivateKeyParameters(keyPair.hex_sign_c_private_key.byteArray),
-            message.toByteArray())
+            encodedRequest.toByteArray())
 
-        val encryptedMessage = encrypt(
+        val (nonce, ciphertext) = loadTest.encrypt(
             keyPair.hex_enc_c_private_key.byteArray,
             keyPair.hex_enc_s_public_key.byteArray,
             signedMessage,
         )
 
-        val resp = send(
-            deviceId,
-            encryptedMessage.first.hex,
-            encryptedMessage.second.hex)
+        val encRequest = EncWrapper(nonce.hex, ciphertext.hex)
+        val encodedEncRequest = Gson().toJson(encRequest)
 
-        val decryptedMessage = decrypt(
+        val encResponse = loadTest.sendPost(
+            url,
+            deviceId,
+            encodedEncRequest,
+            isEncDownstream,
+            isEncUpstream)
+
+        val verifiedMessage = loadTest.decrypt(
             keyPair.hex_enc_c_private_key.byteArray,
             keyPair.hex_enc_s_public_key.byteArray,
-            resp.nonce.byteArray,
-            resp.message.byteArray)
+            encResponse.nonce.byteArray,
+            encResponse.ciphertext.byteArray)
 
-        val verifiedMessage = verifySignature(
+        val response = loadTest.verifySignature(
             Ed25519PublicKeyParameters(keyPair.hex_sign_s_public_key.byteArray),
-            decryptedMessage.byteArray)
+            verifiedMessage.byteArray)
 
-        logger.info("[Completed, message] \t\t\t\t\t${verifiedMessage.string}")
+        logger.info("[Completed, message] \t\t\t\t\t${response.string}")
 
-        return "Test Completed Successfully"
+        return response.string
 
     }
 
@@ -254,34 +265,29 @@ class LoadTest {
 
     }
 
-    private fun send(deviceId: String, nonce: String, message: String): Response {
+    private fun sendPost(url: String, deviceId: String, message: String, 
+                         isEncDownstream: Boolean, isEncUpstream: Boolean): EncWrapper {
 
         // Send message
 
-        val connection = URL("http://localhost:8080/verify").openConnection() as HttpURLConnection
+        val (_, response, result) = url.httpPost()
+            .header(
+                Pair("Content-Type", "application/json"),
+                Pair("X-Device-ID", deviceId),
+                Pair("X-Downstream-Enc", isEncDownstream.toString()),
+                Pair("X-Upstream-Enc", isEncUpstream.toString()))
+            .body(message)
+            .responseString()
 
-        connection.requestMethod = "POST"
+        if (response.statusCode == 200) {
 
-        connection.addRequestProperty("X-Device-ID", deviceId)
-        connection.addRequestProperty("X-Message", message)
-        connection.addRequestProperty("X-Nonce", nonce)
+            logger.info("[Transaction, response-body] \t\t\t${result.get()}")
 
-        val responseCode = connection.responseCode
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-
-            val responseBody = connection.inputStream.bufferedReader().use { it.readText() }
-
-            connection.disconnect()
-
-            logger.info("[Transaction, response-body] \t\t\t$responseBody")
-
-            return Gson().fromJson(responseBody, Response::class.java)
+            return Gson().fromJson(result.get(), EncWrapper::class.java)
 
         } else {
 
-            connection.disconnect()
-
-            throw Exception("HTTP request failed with response code: $responseCode")
+            throw Exception("HTTP request failed with response code: ${response.statusCode}")
 
         }
 
