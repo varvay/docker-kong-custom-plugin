@@ -151,6 +151,7 @@ function EncryptionHandler:access(config)
     local current_body = kong.request.get_body()
     local nonce = utils.hex2bin(current_body.nonce)
     local ciphertext = utils.hex2bin(current_body.ciphertext)
+    kong.log.notice("Downstream encrypted signed message: , ", bin2hex(current_body.ciphertext))
     kong.log.notice("Downstream encrypted signed message size: ", #current_body.ciphertext)
 
     -- Retrieve client's keys from Redis
@@ -171,10 +172,12 @@ function EncryptionHandler:access(config)
     -- Decrypt request
     local signedtext = sodium.crypto_aead_aes256gcm_decrypt(
       shared_key, ciphertext, nonce, nil)
+      kong.log.notice("Downstream signed message: , ", bin2hex(signedtext))
       kong.log.notice("Downstream signed message size: ", #signedtext)
 
     -- Verify signature
     local plaintext = sodium.crypto_sign_open(signedtext, utils.hex2bin(res["sign_c_pub_k"]))
+    kong.log.notice("Downstream plaintext message: , ", signedtext)
     kong.log.notice("Downstream plaintext message size: ", #plaintext)
 
     -- Replace request body
@@ -232,6 +235,7 @@ function EncryptionHandler:body_filter(config)
 
     -- Map response
     local plaintext = kong.service.response.get_raw_body()
+    kong.log.notice("Upstream plaintext message: , ", plaintext)
     kong.log.notice("Upstream plaintext message size: ", #plaintext)
 
     -- Retrieve client's keys from Redis
@@ -253,12 +257,14 @@ function EncryptionHandler:body_filter(config)
 
     -- Sign response
     local s_signed_message = sodium.crypto_sign(plaintext, utils.hex2bin(res["sign_s_priv_k"]))
+    kong.log.notice("Upstream signed message: , ", bin2hex(s_signed_message))
     kong.log.notice("Upstream signed message size: ", #s_signed_message)
 
     -- Encrypt response
     local nonce = sodium.randombytes_buf(sodium.crypto_aead_aes256gcm_NPUBBYTES)
 
     local ciphertext = sodium.crypto_aead_aes256gcm_encrypt(shared_key, s_signed_message, nonce, nil)
+    kong.log.notice("Upstream encrypted signed message: , ", bin2hex(ciphertext))
     kong.log.notice("Upstream encrypted signed message size: ", #ciphertext)
 
     -- Replace response body
