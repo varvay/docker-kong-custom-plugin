@@ -80,6 +80,7 @@ class LoadTest {
             Ed25519PublicKeyParameters(keyPair.hex_sign_s_public_key.byteArray),
             verifiedMessage.byteArray)
 
+        println("[Completed, message] \t\t\t\t\t${response.string}")
         logger.info("[Completed, message] \t\t\t\t\t${response.string}")
 
         return response.string
@@ -131,10 +132,15 @@ class LoadTest {
             keyPair.hex_enc_c_public_key = encPublicKey.encoded.hex
             keyPair.hex_enc_c_private_key = encPrivateKey.encoded.hex
 
+            println("[Key Exchange, response-body] \t\t\t$responseBody")
             logger.info("[Key Exchange, response-body] \t\t\t$responseBody")
+            println("[Key Exchange, enc-private-key] \t\t${encPrivateKey.encoded.hex}")
             logger.info("[Key Exchange, enc-private-key] \t\t${encPrivateKey.encoded.hex}")
+            println("[Key Exchange, enc-public-key] \t\t\t${encPublicKey.encoded.hex}")
             logger.info("[Key Exchange, enc-public-key] \t\t\t${encPublicKey.encoded.hex}")
+            println("[Key Exchange, sign-private-key] \t\t${signPrivateKey.encoded.hex}")
             logger.info("[Key Exchange, sign-private-key] \t\t${signPrivateKey.encoded.hex}")
+            println("[Key Exchange, sign-public-key] \t\t${encPublicKey.encoded.hex}")
             logger.info("[Key Exchange, sign-public-key] \t\t${encPublicKey.encoded.hex}")
 
             return keyPair
@@ -162,6 +168,7 @@ class LoadTest {
         val sharedKey = ByteArray(agreement.agreementSize)
         agreement.calculateAgreement(publicKey, sharedKey, 0)
 
+        println("[Scalar Multiplication, shared-key] \t${sharedKey.hex}")
         logger.info("[Scalar Multiplication, shared-key] \t${sharedKey.hex}")
 
         return sharedKey
@@ -180,6 +187,7 @@ class LoadTest {
 
         val signature = signer.generateSignature()
 
+        println("[Message Signing, signed-message] \t\t${(signature + plaintext).hex}")
         logger.info("[Message Signing, signed-message] \t\t${(signature + plaintext).hex}")
 
         return signature + plaintext
@@ -203,6 +211,7 @@ class LoadTest {
 
         if (isVerified) {
 
+            println("[Signature Verification, message] \t\t${message.string}")
             logger.info("[Signature Verification, message] \t\t${message.string}")
 
             return message
@@ -235,7 +244,9 @@ class LoadTest {
 
         cipher.doFinal(ciphertext, len)
 
+        println("[Encrypt, nonce] \t\t\t\t\t\t${nonce.hex}")
         logger.info("[Encrypt, nonce] \t\t\t\t\t\t${nonce.hex}")
+        println("[Encrypt, encrypted-message] \t\t\t${ciphertext.hex}")
         logger.info("[Encrypt, encrypted-message] \t\t\t${ciphertext.hex}")
 
         return Pair(nonce, ciphertext)
@@ -258,7 +269,9 @@ class LoadTest {
 
         cipher.doFinal(plaintext, len)
 
+        println("[Decrypt, nonce] \t\t\t\t\t\t${nonce.hex}")
         logger.info("[Decrypt, nonce] \t\t\t\t\t\t${nonce.hex}")
+        println("[Decrypt, encrypted-message] \t\t\t${plaintext.hex}")
         logger.info("[Decrypt, encrypted-message] \t\t\t${plaintext.hex}")
 
         return plaintext.hex
@@ -281,6 +294,7 @@ class LoadTest {
 
         if (response.statusCode == 200) {
 
+            println("[Transaction, response-body] \t\t\t${result.get()}")
             logger.info("[Transaction, response-body] \t\t\t${result.get()}")
 
             return Gson().fromJson(result.get(), EncWrapper::class.java)

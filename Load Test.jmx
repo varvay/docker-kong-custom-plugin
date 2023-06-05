@@ -114,7 +114,7 @@ String deviceId = UUID.randomUUID().toString();
 
 LoadTest lt = new LoadTest();
 
-KeyPair keyPair = lt.keyExchange(&quot;http://localhost:8080/key-exchange&quot;, deviceId);
+KeyPair keyPair = lt.keyExchange(&quot;http://ec2-52-90-132-237.compute-1.amazonaws.com:8080/key-exchange&quot;, deviceId);
 
 vars.put(&quot;device_id&quot;, deviceId);
 vars.put(&quot;hex_sign_c_private_key&quot;, keyPair.getHex_sign_c_private_key());
@@ -175,7 +175,7 @@ vars.put(&quot;hex_enc_s_public_key&quot;, keyPair.getHex_enc_s_public_key());</
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">localhost</stringProp>
+          <stringProp name="HTTPSampler.domain">ec2-52-90-132-237.compute-1.amazonaws.com</stringProp>
           <stringProp name="HTTPSampler.port">8080</stringProp>
           <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
@@ -386,7 +386,7 @@ vars.put(&quot;enc_ciphertext&quot;, DatatypeConverter.printHexBinary(pair.getSe
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">localhost</stringProp>
+          <stringProp name="HTTPSampler.domain">ec2-52-90-132-237.compute-1.amazonaws.com</stringProp>
           <stringProp name="HTTPSampler.port">8080</stringProp>
           <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
