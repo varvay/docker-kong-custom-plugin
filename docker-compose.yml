@@ -42,11 +42,11 @@ services:
       - ./config/kong/kong.yaml:/config/kong/kong.yaml:ro
     networks:
       - kong-net
-    deploy:
-      resources:
-        limits:
-          cpus: "0.75"
-          memory: 1024M
-        reservations:
-          cpus: "0.5"
-          memory: 750M
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: "0.75"
+    #       memory: 1024M
+    #     reservations:
+    #       cpus: "0.5"
+    #       memory: 750M
