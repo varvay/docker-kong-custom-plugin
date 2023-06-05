@@ -18,7 +18,7 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">50</stringProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
         <stringProp name="ThreadGroup.duration"></stringProp>
@@ -95,7 +95,7 @@ lt.exec(&quot;http://localhost:8080/key-exchange&quot;, &quot;http://localhost:8
           <stringProp name="HTTPSampler.port">8080</stringProp>
           <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">wiremock/api/endpoint</stringProp>
+          <stringProp name="HTTPSampler.path">wiremock/api/github/users/octocat</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -139,7 +139,7 @@ public class ByteArrayPair {
 }
 
 String deviceId = UUID.randomUUID().toString();
-String jsonRequest = &quot;{\&quot;age\&quot;: 30, \&quot;name\&quot;: \&quot;John\&quot;}&quot;;
+String jsonRequest = &quot;{\&quot;age\&quot;:30,\&quot;name\&quot;:\&quot;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum facilisis mauris tellus, vel ultrices mauris viverra eget. Nunc posuere tortor a enim iaculis condimentum. Aliquam erat volutpat. Etiam porta purus non eros posuere, ac sollicitudin lectus tincidunt. Suspendisse iaculis interdum tortor id blandit. Aliquam in ex blandit, efficitur turpis vitae, malesuada enim. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nec massa fermentum nunc tincidunt convallis a at purus. Nam scelerisque mi quis consequat condimentum. Quisque consequat, libero sed pellentesque convallis, massa turpis interd\&quot;}&quot;;
 Request request = new Gson().fromJson(jsonRequest, Request.class);
 String encodedRequest = new Gson().toJson(request);
 
@@ -302,7 +302,7 @@ vars.put(&quot;enc_ciphertext&quot;, DatatypeConverter.printHexBinary(pair.getSe
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">{&#xd;
     &quot;age&quot;: 30,&#xd;
-    &quot;name&quot;: &quot;John&quot;&#xd;
+    &quot;name&quot;: &quot;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum facilisis mauris tellus, vel ultrices mauris viverra eget. Nunc posuere tortor a enim iaculis condimentum. Aliquam erat volutpat. Etiam porta purus non eros posuere, ac sollicitudin lectus tincidunt. Suspendisse iaculis interdum tortor id blandit. Aliquam in ex blandit, efficitur turpis vitae, malesuada enim. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nec massa fermentum nunc tincidunt convallis a at purus. Nam scelerisque mi quis consequat condimentum. Quisque consequat, libero sed pellentesque convallis, massa turpis interd&quot;&#xd;
 }</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
@@ -312,7 +312,7 @@ vars.put(&quot;enc_ciphertext&quot;, DatatypeConverter.printHexBinary(pair.getSe
           <stringProp name="HTTPSampler.port">8080</stringProp>
           <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">wiremock/api/endpoint</stringProp>
+          <stringProp name="HTTPSampler.path">wiremock/api/github/users/octocat</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -356,7 +356,7 @@ public class ByteArrayPair {
 }
 
 String deviceId = UUID.randomUUID().toString();
-String jsonRequest = &quot;{\&quot;age\&quot;: 30, \&quot;name\&quot;: \&quot;John\&quot;}&quot;;
+String jsonRequest = &quot;{\&quot;age\&quot;:30,\&quot;name\&quot;:\&quot;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum facilisis mauris tellus, vel ultrices mauris viverra eget. Nunc posuere tortor a enim iaculis condimentum. Aliquam erat volutpat. Etiam porta purus non eros posuere, ac sollicitudin lectus tincidunt. Suspendisse iaculis interdum tortor id blandit. Aliquam in ex blandit, efficitur turpis vitae, malesuada enim. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nec massa fermentum nunc tincidunt convallis a at purus. Nam scelerisque mi quis consequat condimentum. Quisque consequat, libero sed pellentesque convallis, massa turpis interd\&quot;}&quot;;
 Request request = new Gson().fromJson(jsonRequest, Request.class);
 String encodedRequest = new Gson().toJson(request);
 
