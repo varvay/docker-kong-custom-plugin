@@ -1,0 +1,38 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/api/mini",
+    "bodyPatterns": [
+      {
+        "equalToJson": "{\"id\":\"f4033f0a-fa83-4342-9bb2-1b812798d9a1\",\"name\":\"John Doe\",\"age\":30,\"email\":\"john.doe@example.com\",\"phone_address\":\"+6281214409138\",\"home_address\":{\"street\":\"123 Main St\",\"city\":\"New York\",\"country\":\"USA\"},\"office_address\":{\"street\":\"123 Main St\",\"city\":\"New York\",\"country\":\"USA\"},\"alt_address\":{\"country\":\"Bali\"},\"interests\":[\"programming\",\"reading\",\"traveling\",\"eating\",\"sleeping\",\"writing\",\"cleaning\",\"working\"],\"active\":true,\"timestamp\":\"2023-06-05T12:34:56Z\"}"
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "login": "octocat",
+      "id": 583231,
+      "node_id": "MDQ6VXNlcjU4MzIzMQ==",
+      "avatar_url": "https://avatars.githubusercontent.com/u/583231?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/octocat",
+      "html_url": "https://github.com/octocat",
+      "type": "User",
+      "site_admin": false,
+      "name": "The Octocat",
+      "company": "@github",
+      "blog": "https://github.blog",
+      "location": "San Francisco",
+      "public_repos": 8,
+      "public_gists": 8,
+      "followers": 9400121,
+      "following": 19739,
+      "created_at": "2011-01-25T18:44:36Z",
+      "updated_at": "2023-05-22T11:20:34Z"
+    }
+  }
+}

@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "POST",
-    "url": "/api/endpoint",
+    "url": "/api/github/users/octocat",
     "bodyPatterns": [
       {
         "equalToJson": "{\"name\":\"John\",\"age\":30}"
