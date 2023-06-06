@@ -51,7 +51,7 @@ class LoadTest {
         val keyPair = loadTest.keyExchange(keyExchangeUrl, deviceId)
 
         val signedMessage = loadTest.signMessage(
-            Ed25519PrivateKeyParameters(keyPair.hex_sign_c_private_key.byteArray),
+            keyPair.hex_sign_c_private_key.byteArray,
             encodedRequest.toByteArray())
 
         val (nonce, ciphertext) = loadTest.encrypt(
@@ -77,8 +77,8 @@ class LoadTest {
             encResponse.ciphertext.byteArray)
 
         val response = loadTest.verifySignature(
-            Ed25519PublicKeyParameters(keyPair.hex_sign_s_public_key.byteArray),
-            verifiedMessage.byteArray)
+            keyPair.hex_sign_s_public_key.byteArray,
+            verifiedMessage)
 
         println("[Completed, message] \t\t\t\t\t${response.string}")
         logger.info("[Completed, message] \t\t\t\t\t${response.string}")
@@ -175,13 +175,13 @@ class LoadTest {
 
     }
 
-    fun signMessage(signPrivateKey: Ed25519PrivateKeyParameters, plaintext: ByteArray): ByteArray {
+    fun signMessage(signPrivateKey: ByteArray, plaintext: ByteArray): ByteArray {
 
         // Sign message
 
         val signer = Ed25519Signer()
 
-        signer.init(true, signPrivateKey)
+        signer.init(true, Ed25519PrivateKeyParameters(signPrivateKey))
 
         signer.update(plaintext, 0, plaintext.size)
 
@@ -194,7 +194,7 @@ class LoadTest {
 
     }
 
-    fun verifySignature(signPublicKey: Ed25519PublicKeyParameters, plaintext: ByteArray): ByteArray {
+    fun verifySignature(signPublicKey: ByteArray, plaintext: ByteArray): ByteArray {
 
         // Verify signature
 
@@ -203,7 +203,7 @@ class LoadTest {
 
         val verifier = Ed25519Signer()
 
-        verifier.init(false, signPublicKey)
+        verifier.init(false, Ed25519PublicKeyParameters(signPublicKey))
 
         verifier.update(message, 0, message.size)
 
@@ -252,7 +252,7 @@ class LoadTest {
         return Pair(nonce, ciphertext)
     }
 
-    fun decrypt(privateKey: ByteArray, publicKey: ByteArray, nonce: ByteArray, ciphertext: ByteArray): String {
+    fun decrypt(privateKey: ByteArray, publicKey: ByteArray, nonce: ByteArray, ciphertext: ByteArray): ByteArray {
 
         // Decrypt message
 
@@ -274,7 +274,7 @@ class LoadTest {
         println("[Decrypt, encrypted-message] \t\t\t${plaintext.hex}")
         logger.info("[Decrypt, encrypted-message] \t\t\t${plaintext.hex}")
 
-        return plaintext.hex
+        return plaintext
 
     }
 
