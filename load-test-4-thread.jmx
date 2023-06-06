@@ -9,7 +9,7 @@
       <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
         <collectionProp name="Arguments.arguments"/>
       </elementProp>
-      <stringProp name="TestPlan.user_define_classpath">/Users/vaya/Documents/Workspace/Maverick/docker-kong/jmeter-lib/javax.activation-api-1.2.0.jar,/Users/vaya/Documents/Workspace/Maverick/docker-kong/jmeter-lib/jaxb-api-2.3.1.jar,/Users/vaya/Documents/Workspace/Maverick/docker-kong/jmeter-lib/hello-world/build/libs/fat-hello-world-1.0-SNAPSHOT.jar</stringProp>
+      <stringProp name="TestPlan.user_define_classpath">/home/ubuntu/workspace/docker-kong-custom-plugin/jmeter-lib/javax.activation-api-1.2.0.jar,/home/ubuntu/workspace/docker-kong-custom-plugin/jmeter-lib/jaxb-api-2.3.1.jar,/home/ubuntu/workspace/docker-kong-custom-plugin/jmeter-lib/hello-world/build/libs/fat-hello-world-1.0-SNAPSHOT.jar</stringProp>
     </TestPlan>
     <hashTree>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group" enabled="true">
@@ -18,8 +18,8 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">200</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">4</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">4</stringProp>
+        <stringProp name="ThreadGroup.num_threads">16</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">16</stringProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
         <stringProp name="ThreadGroup.duration"></stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
